@@ -1,115 +1,138 @@
-const loginModal = require("../../Modal/login/login");
-const otpModal = require("../../Modal/otp/otp");
-const bcrypt = require("bcrypt");
-
-const data = (req, res) => {
-  try {
-    res.status(200).json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+const currency = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    currency: [
+      "USD", // US Dollar
+      "EUR", // Euro
+      "JPY", // Japanese Yen
+      "GBP", // British Pound
+      "AUD", // Australian Dollar
+      "CAD", // Canadian Dollar
+      "CHF", // Swiss Franc
+      "CNY", // Chinese Yuan
+      "SEK", // Swedish Krona
+      "NZD", // New Zealand Dollar
+      "MXN", // Mexican Peso
+      "SGD", // Singapore Dollar
+      "HKD", // Hong Kong Dollar
+      "NOK", // Norwegian Krone
+      "KRW", // South Korean Won
+      "TRY", // Turkish Lira
+      "INR", // Indian Rupee
+      "RUB", // Russian Ruble
+      "BRL", // Brazilian Real
+      "ZAR", // South African Rand
+      "DKK", // Danish Krone
+      "PLN", // Polish Zloty
+      "THB", // Thai Baht
+      "IDR", // Indonesian Rupiah
+      "HUF", // Hungarian Forint
+      "CZK", // Czech Koruna
+      "ILS", // Israeli Shekel
+      "CLP", // Chilean Peso
+      "PHP", // Philippine Peso
+      "AED", // United Arab Emirates Dirham
+      "COP", // Colombian Peso
+      "SAR", // Saudi Riyal
+      "MYR", // Malaysian Ringgit
+      "RON", // Romanian Leu
+    ],
+  });
 };
 
-const login = async (req, res) => {
-  try {
-    console.log("Req", req.body);
-    const { email, password } = req.body;
-
-    // Check if the email is already present
-    const existingUser = await loginModal.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: "Email already present" });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = new loginModal({
-      email,
-      password: hashedPassword,
-    });
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: `Email registered successfully ${email}`,
-    });
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-const sendOTP = async (req, res) => {
-  console.log("Api hit");
-  const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-  const { email } = req.body;
-  try {
-    await otpModal.findOneAndUpdate(
-      { email },
-      { otp, otpExpiry },
-      { upsert: true, new: true }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: `otp send successfully to ${email}`,
-      otp,
-    });
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-
-  const sendOTP = async (req, res) => {
-    console.log("Api hit");
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    const { email } = req.body;
-    try {
-      await otpModal.findOneAndUpdate(
-        { email },
-        { otp, otpExpiry },
-        { upsert: true, new: true }
-      );
-
-      res.status(200).json({
-        success: true,
-        message: `otp send successfully to ${email}`,
-        otp,
-      });
-    } catch (error) {
-      console.error("Error during login:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
+const MCC = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    list: [
+      "item 1",
+      "item 2",
+      "item 3",
+      "item 4",
+      "item 5",
+      "item 6",
+      "item 7",
+      "item 8",
+    ],
+  });
 };
 
-const verifyOTP = async (req, res) => {
-  const { email, enteredOTP } = req.body;
-  const user = await otpModal.findOne({ email });
-
-  console.log(req.body);
-  console.log(user);
-  try {
-    if (user && user.otp === enteredOTP && user.otpExpiry > new Date()) {
-      user.otp = enteredOTP;
-      await user.save();
-      res.status(200).json({
-        success: true,
-        message: `OTP verified successfully`,
-        enteredOTP,
-      });
-    } else {
-      res.status(200).json({
-        success: false,
-        message: "Invalid or expired OTP",
-        enteredOTP,
-      });
-    }
-  } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+const timeZone = async (req, res) => {
+  res.status(200).json({
+    success: true,
+    timeZone: [
+      "UTC", // Coordinated Universal Time
+      "GMT", // Greenwich Mean Time
+      "ECT", // European Central Time
+      "EET", // Eastern European Time
+      "ART", // (Arabic) Egypt Standard Time
+      "EAT", // Eastern African Time
+      "MET", // Middle East Time
+      "NET", // Near East Time
+      "PLT", // Pakistan Lahore Time
+      "IST", // India Standard Time
+      "BST", // Bangladesh Standard Time
+      "VST", // Vietnam Standard Time
+      "CTT", // China Taiwan Time
+      "JST", // Japan Standard Time
+      "ACT", // Australia Central Time
+      "AET", // Australia Eastern Time
+      "SST", // Solomon Standard Time
+      "NST", // New Zealand Standard Time
+      "MIT", // Midway Islands Time
+      "HST", // Hawaii Standard Time
+      "AST", // Alaska Standard Time
+      "PST", // Pacific Standard Time
+      "PNT", // Phoenix Standard Time
+      "MST", // Mountain Standard Time
+      "CST", // Central Standard Time
+      "EST", // Eastern Standard Time
+      "IET", // Indiana Eastern Standard Time
+      "PRT", // Puerto Rico and US Virgin Islands Time
+      "CNT", // Canada Newfoundland Time
+      "AGT", // Argentina Standard Time
+      "BET", // Brazil Eastern Time
+      "CAT", // Central African Time
+    ],
+  });
 };
 
-module.exports = { data, login, sendOTP, verifyOTP };
+const register = async (req, res) => {
+  const { name, mcc, currency, timeZone, invitationMail, mail, role } =
+    req.body;
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    object: {
+      name,
+      mcc,
+      currency,
+      timeZone,
+      invitationMail,
+      mail,
+      role,
+    },
+  });
+};
+
+const budgetBilling = async (req, res) => {
+  const { currency, Budget, paymentAccountId } = req.body;
+
+  res.status(200).json({
+    status: 200,
+    success: true,
+    object: {
+      currency,
+      Budget,
+      paymentAccountId,
+    },
+  });
+};
+
+module.exports = {
+  currency,
+  MCC,
+  register,
+  timeZone,
+  budgetBilling,
+};

@@ -1,15 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const {
-  data,
-  login,
-  sendOTP,
-  verifyOTP,
+  currency,
+  MCC,
+  register,
+  timeZone,
+  budgetBilling,
 } = require("../Controller/RegisterController");
 
-router.get("/data", data);
-router.post("/login", login);
-router.post("/otp", sendOTP);
-router.post("/verifyOTP", verifyOTP);
+router.get("/currency", currency);
+router.get("/timeZone", timeZone);
+router.get("/MCC", MCC);
+router.post("/register", register);
+router.post("/budgetBilling", budgetBilling);
 
 module.exports = router;
