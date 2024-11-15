@@ -100,6 +100,24 @@ const register = async (req, res) => {
   const { name, mcc, currency, timeZone, invitationMail, mail, role } =
     req.body;
 
+  const missingFields = [];
+  if (!name) missingFields.push("name");
+  if (!mcc) missingFields.push("mcc");
+  if (!currency) missingFields.push("currency");
+  if (!timeZone) missingFields.push("timeZone");
+  if (!invitationMail) missingFields.push("invitationMail");
+  if (!mail) missingFields.push("mail");
+  if (!role) missingFields.push("role");
+
+  // If there are any missing fields, respond with an error
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      status: 400,
+      success: false,
+      message: `Missing required fields: ${missingFields.join(", ")}`,
+    });
+  }
+
   res.status(200).json({
     status: 200,
     success: true,
@@ -117,6 +135,20 @@ const register = async (req, res) => {
 
 const budgetBilling = async (req, res) => {
   const { currency, Budget, paymentAccountId } = req.body;
+
+  const missingFields = [];
+  if (!Budget) missingFields.push("Budget");
+  if (!paymentAccountId) missingFields.push("paymentAccountId");
+  if (!currency) missingFields.push("currency");
+
+  // If there are any missing fields, respond with an error
+  if (missingFields.length > 0) {
+    return res.status(400).json({
+      status: 400,
+      success: false,
+      message: `Missing required fields: ${missingFields.join(", ")}`,
+    });
+  }
 
   res.status(200).json({
     status: 200,
