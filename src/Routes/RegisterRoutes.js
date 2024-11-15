@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   currency,
-  MCC,
+  getManagedAccounts,
   register,
   timeZone,
   budgetBilling,
@@ -10,7 +10,7 @@ const {
 
 router.get("/currency", currency);
 router.get("/timeZone", timeZone);
-router.get("/MCC", MCC);
+router.get("/getManagedAccounts", getManagedAccounts);
 router.post("/register", register);
 router.post("/budgetBilling", budgetBilling);
 

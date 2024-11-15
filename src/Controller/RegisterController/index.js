@@ -1,3 +1,16 @@
+const { GoogleAdsApi } = require("google-ads-api");
+
+const client = new GoogleAdsApi({
+  client_id: "<CLIENT-ID>",
+  client_secret: "<CLIENT-SECRET>",
+  developer_token: "<DEVELOPER-TOKEN>",
+});
+
+const customer = client.Customer({
+  customer_id: "<Customer_ID>",
+  refresh_token: "<Refresh_Token>",
+});
+
 const currency = async (req, res) => {
   res.status(200).json({
     success: true,
@@ -40,20 +53,34 @@ const currency = async (req, res) => {
   });
 };
 
-const MCC = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    list: [
-      "item 1",
-      "item 2",
-      "item 3",
-      "item 4",
-      "item 5",
-      "item 6",
-      "item 7",
-      "item 8",
-    ],
-  });
+const getManagedAccounts = async (req, res) => {
+  try {
+    // Query to retrieve customer client details
+    const response = await customer.query(
+      `SELECT customer_client.client_customer, customer_client.level, customer_client.manager, customer_client.descriptive_name
+       FROM customer_client
+       WHERE customer_client.level = 1` // Level 1 returns accounts directly under the MCC
+    );
+
+    // Map the response to format the account details
+    const accountList = response.map((row) => ({
+      customerId: row.customer_client.client_customer,
+      descriptiveName: row.customer_client.descriptive_name,
+      isManagerAccount: row.customer_client.manager,
+    }));
+
+    // Return the list in the specified format
+    res.status(200).json({
+      success: true,
+      list: accountList,
+    });
+  } catch (error) {
+    console.error("Error retrieving MCC accounts:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error retrieving MCC accounts",
+    });
+  }
 };
 
 const timeZone = async (req, res) => {
@@ -109,7 +136,6 @@ const register = async (req, res) => {
   if (!mail) missingFields.push("mail");
   if (!role) missingFields.push("role");
 
-  // If there are any missing fields, respond with an error
   if (missingFields.length > 0) {
     return res.status(400).json({
       status: 400,
@@ -136,12 +162,17 @@ const register = async (req, res) => {
 const budgetBilling = async (req, res) => {
   const { currency, Budget, paymentAccountId } = req.body;
 
+  const budgetResponse = await customer.campaignBudgets.create({
+    name: "My Campaign Budget", // handle name
+    amount_micros: Budget, // $100 budget in micros
+    delivery_method: "STANDARD", // handle delivery method
+  });
+
   const missingFields = [];
   if (!Budget) missingFields.push("Budget");
   if (!paymentAccountId) missingFields.push("paymentAccountId");
   if (!currency) missingFields.push("currency");
 
-  // If there are any missing fields, respond with an error
   if (missingFields.length > 0) {
     return res.status(400).json({
       status: 400,
@@ -153,17 +184,13 @@ const budgetBilling = async (req, res) => {
   res.status(200).json({
     status: 200,
     success: true,
-    object: {
-      currency,
-      Budget,
-      paymentAccountId,
-    },
+    campaign: budgetResponse.resource_name,
   });
 };
 
 module.exports = {
   currency,
-  MCC,
+  getManagedAccounts,
   register,
   timeZone,
   budgetBilling,

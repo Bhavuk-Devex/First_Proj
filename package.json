@@ -15,6 +15,7 @@
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "google-ads-api": "^17.1.0-rest-beta",
     "http": "^0.0.1-security",
     "mongoose": "^8.8.1"
   },
